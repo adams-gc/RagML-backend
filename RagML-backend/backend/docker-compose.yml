@@ -1,0 +1,49 @@
+version: "3.8"
+services:
+  api:
+    build: .
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - qdrant
+      - postgres
+      - redis
+    networks: [ragnet]
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    networks: [ragnet]
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [ragnet]
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks: [ragnet]
+
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    networks: [ragnet]
+
+networks:
+  ragnet:
+
+volumes:
+  qdrant_storage:
+  pgdata:
